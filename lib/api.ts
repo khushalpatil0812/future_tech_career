@@ -95,15 +95,20 @@ export const adminApi = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
       })
-      if (!response.ok) throw new Error("Invalid credentials")
-      const data = await response.json()
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Invalid credentials")
+      }
+      const result = await response.json()
+      // Backend returns ApiResponse wrapper with data property
+      const data = result.data || result
       if (data.token) {
         localStorage.setItem("admin_token", data.token)
       }
       return data
     } catch (error) {
       console.error("Login error:", error)
-      throw new Error("Invalid credentials")
+      throw error
     }
   },
 
