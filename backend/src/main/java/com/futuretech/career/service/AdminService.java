@@ -62,6 +62,9 @@ public class AdminService {
     }
     
     public Inquiry markInquiryAsRead(String id, boolean isRead) {
+        if (id == null) {
+            throw new IllegalArgumentException("Inquiry ID cannot be null");
+        }
         Inquiry inquiry = inquiryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Inquiry not found"));
         
@@ -70,10 +73,15 @@ public class AdminService {
     }
     
     public void deleteInquiry(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Inquiry ID cannot be null");
+        }
         Inquiry inquiry = inquiryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Inquiry not found"));
         
-        inquiryRepository.delete(inquiry);
+        if (inquiry != null) {
+            inquiryRepository.delete(inquiry);
+        }
     }
     
     public PaginationResponse<Page<Feedback>> getAllFeedback(int page, int limit, String status) {
@@ -98,6 +106,9 @@ public class AdminService {
     
     @Transactional
     public Testimonial approveFeedback(String id, String role) {
+        if (id == null) {
+            throw new IllegalArgumentException("Feedback ID cannot be null");
+        }
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
         
@@ -119,6 +130,9 @@ public class AdminService {
     }
     
     public Feedback rejectFeedback(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Feedback ID cannot be null");
+        }
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
         
