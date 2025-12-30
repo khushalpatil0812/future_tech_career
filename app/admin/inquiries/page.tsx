@@ -15,15 +15,21 @@ export default function InquiriesPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    adminApi.getInquiries().then((data) => {
-      setInquiries(data)
-      setIsLoading(false)
-    })
+    adminApi.getInquiries()
+      .then((data) => {
+        setInquiries(Array.isArray(data) ? data : [])
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error loading inquiries:", error)
+        setInquiries([])
+        setIsLoading(false)
+      })
   }, [])
 
   const toggleStatus = (id: string) => {
     setInquiries(
-      inquiries.map((inq) => (inq.id === id ? { ...inq, status: inq.status === "unread" ? "read" : "unread" } : inq)),
+      inquiries.map((inq) => (inq.id === id ? { ...inq, isRead: !inq.isRead } : inq)),
     )
     toast({ title: "Updated", description: "Status changed successfully." })
   }
@@ -63,7 +69,9 @@ export default function InquiriesPage() {
                 <TableCell>{inq.inquiryType}</TableCell>
                 <TableCell>{new Date(inq.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Badge variant={inq.status === "unread" ? "destructive" : "secondary"}>{inq.status}</Badge>
+                  <Badge variant={!inq.isRead ? "destructive" : "secondary"}>
+                    {inq.isRead ? "Read" : "Unread"}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button variant="ghost" size="icon" onClick={() => toggleStatus(inq.id)} title="Mark Read/Unread">

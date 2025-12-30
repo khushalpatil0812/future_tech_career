@@ -15,10 +15,16 @@ export default function FeedbackManagerPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    adminApi.getFeedback().then((data) => {
-      setFeedback(data)
-      setIsLoading(false)
-    })
+    adminApi.getFeedback()
+      .then((data) => {
+        setFeedback(Array.isArray(data) ? data : [])
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error loading feedback:", error)
+        setFeedback([])
+        setIsLoading(false)
+      })
   }, [])
 
   const handleStatusChange = async (id: string, status: "approved" | "rejected") => {

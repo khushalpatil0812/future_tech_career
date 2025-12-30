@@ -15,10 +15,17 @@ export default function TestimonialsManagerPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    adminApi.getFeedback().then((data) => {
-      setTestimonials(data.filter((f) => f.status === "approved"))
-      setIsLoading(false)
-    })
+    adminApi.getFeedback()
+      .then((data) => {
+        const feedbackArray = Array.isArray(data) ? data : []
+        setTestimonials(feedbackArray.filter((f) => f.status === "approved"))
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error loading testimonials:", error)
+        setTestimonials([])
+        setIsLoading(false)
+      })
   }, [])
 
   const updateRole = (id: string, role: string) => {
