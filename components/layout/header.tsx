@@ -10,12 +10,24 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 const NAV_LINKS = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Feedback", href: "/feedback" },
-  { name: "Contact", href: "/contact" },
+  { name: "Home", href: "#" },
+  { name: "About", href: "#about" },
+  { name: "Services", href: "#services" },
+  { name: "Testimonials", href: "#testimonials" },
+  { name: "Contact", href: "#contact" },
 ]
+
+const scrollToSection = (href: string, callback?: () => void) => {
+  if (href === "#") {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  } else {
+    const element = document.querySelector(href)
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+  callback?.()
+}
 
 export function Header() {
   const pathname = usePathname()
@@ -27,27 +39,24 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center space-x-2">
+        <button onClick={() => scrollToSection("#")} className="flex items-center space-x-2 cursor-pointer">
           <Image src="/images/logo.png" alt={SITE_NAME} width={40} height={40} className="h-10 w-auto" />
           <span className="text-xl font-bold text-primary hidden sm:inline-block">{SITE_NAME}</span>
-        </Link>
+        </button>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex md:items-center md:space-x-6">
           {NAV_LINKS.map((link) => (
-            <Link
+            <button
               key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === link.href ? "text-primary" : "text-muted-foreground",
-              )}
+              onClick={() => scrollToSection(link.href)}
+              className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
             >
               {link.name}
-            </Link>
+            </button>
           ))}
-          <Button asChild variant="default" size="sm">
-            <Link href="/contact">Get Started</Link>
+          <Button onClick={() => scrollToSection("#contact")} variant="default" size="sm">
+            Get Started
           </Button>
         </nav>
 
@@ -61,22 +70,16 @@ export function Header() {
       {isOpen && (
         <div className="md:hidden border-t bg-background p-4 flex flex-col space-y-4">
           {NAV_LINKS.map((link) => (
-            <Link
+            <button
               key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === link.href ? "text-primary" : "text-muted-foreground",
-              )}
+              onClick={() => scrollToSection(link.href, () => setIsOpen(false))}
+              className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground text-left"
             >
               {link.name}
-            </Link>
+            </button>
           ))}
-          <Button asChild className="w-full">
-            <Link href="/contact" onClick={() => setIsOpen(false)}>
-              Get Started
-            </Link>
+          <Button onClick={() => scrollToSection("#contact", () => setIsOpen(false))} className="w-full">
+            Get Started
           </Button>
         </div>
       )}

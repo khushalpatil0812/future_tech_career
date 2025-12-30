@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+* {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 :root {
   /* Customizing theme colors for Future-Tech Career */
   --background: oklch(0.99 0.01 220);

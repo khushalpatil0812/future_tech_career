@@ -10,12 +10,32 @@ import { useToast } from "@/hooks/use-toast"
 import { Save, Loader2 } from "lucide-react"
 
 export default function ContentEditorPage() {
-  const [content, setContent] = useState<any>(null)
+  const [content, setContent] = useState<any>({
+    hero: { title: "", subtitle: "" },
+    about: { mission: "", vision: "" },
+    contact: { email: "", phone: "", address: "" }
+  })
   const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
 
   useEffect(() => {
-    publicApi.getContent().then(setContent)
+    publicApi.getContent()
+      .then(data => {
+        setContent({
+          hero: data?.hero || { title: "", subtitle: "" },
+          about: data?.about || { mission: "", vision: "" },
+          contact: data?.contact || { email: "", phone: "", address: "" }
+        })
+      })
+      .catch(() => {
+        toast({ 
+          title: "Error", 
+          description: "Failed to load content. Using defaults.", 
+          variant: "destructive" 
+        })
+      })
+      .finally(() => setIsLoading(false))
   }, [])
 
   const handleSave = async () => {
@@ -30,7 +50,7 @@ export default function ContentEditorPage() {
     }
   }
 
-  if (!content) return <div className="p-8">Loading content...</div>
+  if (isLoading) return <div className="p-8">Loading content...</div>
 
   return (
     <div className="space-y-8 max-w-4xl">
@@ -55,14 +75,14 @@ export default function ContentEditorPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Hero Title</label>
               <Input
-                value={content.hero.title}
+                value={content?.hero?.title || ""}
                 onChange={(e) => setContent({ ...content, hero: { ...content.hero, title: e.target.value } })}
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Hero Subtitle</label>
               <Textarea
-                value={content.hero.subtitle}
+                value={content?.hero?.subtitle || ""}
                 onChange={(e) => setContent({ ...content, hero: { ...content.hero, subtitle: e.target.value } })}
               />
             </div>
@@ -77,14 +97,14 @@ export default function ContentEditorPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Our Mission</label>
               <Textarea
-                value={content.about.mission}
+                value={content?.about?.mission || ""}
                 onChange={(e) => setContent({ ...content, about: { ...content.about, mission: e.target.value } })}
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Our Vision</label>
               <Textarea
-                value={content.about.vision}
+                value={content?.about?.vision || ""}
                 onChange={(e) => setContent({ ...content, about: { ...content.about, vision: e.target.value } })}
               />
             </div>
@@ -99,21 +119,21 @@ export default function ContentEditorPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Support Email</label>
               <Input
-                value={content.contact.email}
+                value={content?.contact?.email || ""}
                 onChange={(e) => setContent({ ...content, contact: { ...content.contact, email: e.target.value } })}
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Phone Number</label>
               <Input
-                value={content.contact.phone}
+                value={content?.contact?.phone || ""}
                 onChange={(e) => setContent({ ...content, contact: { ...content.contact, phone: e.target.value } })}
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Office Address</label>
               <Input
-                value={content.contact.address}
+                value={content?.contact?.address || ""}
                 onChange={(e) => setContent({ ...content, contact: { ...content.contact, address: e.target.value } })}
               />
             </div>
