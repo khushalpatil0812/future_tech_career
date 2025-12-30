@@ -22,7 +22,7 @@ export default function TestimonialsManagerPage() {
         setIsLoading(false)
       })
       .catch((error) => {
-        console.error("Error loading testimonials:", error)
+        logger.error("Error loading testimonials:", error)
         setTestimonials([])
         setIsLoading(false)
       })

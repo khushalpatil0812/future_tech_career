@@ -14,6 +14,12 @@ public class ContentController {
     
     private final ContentService contentService;
     
+    @GetMapping
+    public ResponseEntity<ApiResponse<java.util.List<Content>>> getAllContent() {
+        java.util.List<Content> content = contentService.getAllContent();
+        return ResponseEntity.ok(ApiResponse.success(content));
+    }
+    
     @GetMapping("/{section}")
     public ResponseEntity<ApiResponse<Content>> getContentBySection(@PathVariable String section) {
         Content content = contentService.getContentBySection(section);

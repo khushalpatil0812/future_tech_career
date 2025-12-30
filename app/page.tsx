@@ -17,7 +17,19 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const content = await publicApi.getContent()
+  // Use fallback content to prevent blocking, fetch with timeout
+  let content
+  try {
+    content = await publicApi.getContent()
+  } catch (error) {
+    // Use default content if API fails or times out
+    content = {
+      hero: {
+        title: "Transform Your Tech Career",
+        subtitle: "Expert guidance, personalized strategies, and proven results for tech professionals worldwide.",
+      },
+    }
+  }
 
   return (
     <>

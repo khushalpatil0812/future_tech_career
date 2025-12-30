@@ -1,4 +1,5 @@
 import { mockData, type Testimonial, type Inquiry } from "./mock-data"
+import { logger } from "./logger"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
 
@@ -7,13 +8,16 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 export const publicApi = {
   async getTestimonials(): Promise<Testimonial[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/testimonials/active`)
+      const response = await fetch(`${API_BASE_URL}/testimonials/active`, {
+        next: { revalidate: 300 }, // Cache for 5 minutes
+        signal: AbortSignal.timeout(5000), // 5 second timeout
+      })
       if (!response.ok) throw new Error("Failed to fetch testimonials")
       const data = await response.json()
       // Backend returns ApiResponse wrapper with data property
       return data.data || data
     } catch (error) {
-      console.error("Error fetching testimonials:", error)
+      logger.error("Error fetching testimonials:", error)
       return mockData.testimonials.filter((t) => t.status === "approved")
     }
   },
@@ -30,7 +34,7 @@ export const publicApi = {
       if (!response.ok) throw new Error("Failed to submit inquiry")
       return await response.json()
     } catch (error) {
-      console.error("Error submitting inquiry:", error)
+      logger.error("Error submitting inquiry:", error)
       throw error
     }
   },
@@ -51,27 +55,33 @@ export const publicApi = {
       if (!response.ok) throw new Error("Failed to submit feedback")
       return await response.json()
     } catch (error) {
-      console.error("Error submitting feedback:", error)
+      logger.error("Error submitting feedback:", error)
       throw error
     }
   },
 
   async getSEO(page: keyof typeof mockData.seo) {
     try {
-      const response = await fetch(`${API_BASE_URL}/seo/${page}`)
+      const response = await fetch(`${API_BASE_URL}/seo/${page}`, {
+        next: { revalidate: 600 }, // Cache for 10 minutes
+        signal: AbortSignal.timeout(5000),
+      })
       if (!response.ok) throw new Error("Failed to fetch SEO data")
       const data = await response.json()
       // Backend returns ApiResponse wrapper with data property
       return data.data || data
     } catch (error) {
-      console.error("Error fetching SEO data:", error)
+      logger.error("Error fetching SEO data:", error)
       return mockData.seo[page]
     }
   },
 
   async getContent() {
     try {
-      const response = await fetch(`${API_BASE_URL}/content`)
+      const response = await fetch(`${API_BASE_URL}/content`, {
+        next: { revalidate: 600 }, // Cache for 10 minutes
+        signal: AbortSignal.timeout(5000),
+      })
       if (!response.ok) throw new Error("Failed to fetch content")
       const data = await response.json()
       // Backend returns ApiResponse wrapper with data property
@@ -81,7 +91,7 @@ export const publicApi = {
         return acc
       }, {})
     } catch (error) {
-      console.error("Error fetching content:", error)
+      logger.error("Error fetching content:", error)
       return mockData.content
     }
   },
@@ -107,7 +117,7 @@ export const adminApi = {
       }
       return data
     } catch (error) {
-      console.error("Login error:", error)
+      logger.error("Login error:", error)
       throw error
     }
   },
@@ -125,7 +135,7 @@ export const adminApi = {
       // PaginationResponse has items array
       return data.items || data
     } catch (error) {
-      console.error("Error fetching inquiries:", error)
+      logger.error("Error fetching inquiries:", error)
       return []
     }
   },
@@ -143,7 +153,7 @@ export const adminApi = {
       // PaginationResponse has items array
       return data.items || data
     } catch (error) {
-      console.error("Error fetching feedback:", error)
+      logger.error("Error fetching feedback:", error)
       return []
     }
   },
@@ -162,7 +172,7 @@ export const adminApi = {
       if (!response.ok) throw new Error("Failed to update status")
       return await response.json()
     } catch (error) {
-      console.error("Error updating testimonial status:", error)
+      logger.error("Error updating testimonial status:", error)
       throw error
     }
   },
@@ -181,7 +191,7 @@ export const adminApi = {
       if (!response.ok) throw new Error("Failed to update content")
       return await response.json()
     } catch (error) {
-      console.error("Error updating content:", error)
+      logger.error("Error updating content:", error)
       throw error
     }
   },
@@ -200,7 +210,7 @@ export const adminApi = {
       if (!response.ok) throw new Error("Failed to update SEO")
       return await response.json()
     } catch (error) {
-      console.error("Error updating SEO:", error)
+      logger.error("Error updating SEO:", error)
       throw error
     }
   },

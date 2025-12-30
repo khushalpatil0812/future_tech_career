@@ -21,7 +21,7 @@ export default function FeedbackManagerPage() {
         setIsLoading(false)
       })
       .catch((error) => {
-        console.error("Error loading feedback:", error)
+        logger.error("Error loading feedback:", error)
         setFeedback([])
         setIsLoading(false)
       })

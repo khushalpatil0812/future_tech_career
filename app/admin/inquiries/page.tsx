@@ -21,7 +21,7 @@ export default function InquiriesPage() {
         setIsLoading(false)
       })
       .catch((error) => {
-        console.error("Error loading inquiries:", error)
+        logger.error("Error loading inquiries:", error)
         setInquiries([])
         setIsLoading(false)
       })

@@ -20,7 +20,7 @@ export default function DashboardPage() {
         setIsLoading(false)
       })
       .catch((error) => {
-        console.error("Error loading dashboard data:", error)
+        logger.error("Error loading dashboard data:", error)
         setInquiries([])
         setFeedback([])
         setIsLoading(false)

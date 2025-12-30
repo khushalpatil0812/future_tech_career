@@ -12,6 +12,10 @@ public class ContentService {
     
     private final ContentRepository contentRepository;
     
+    public java.util.List<Content> getAllContent() {
+        return contentRepository.findAll();
+    }
+    
     public Content getContentBySection(String section) {
         return contentRepository.findBySection(section)
                 .orElseThrow(() -> new ResourceNotFoundException("Content section not found: " + section));
