@@ -16,7 +16,7 @@ export interface Inquiry {
   phone: string
   inquiryType: string
   message: string
-  status: "unread" | "read"
+  isRead: boolean
   createdAt: string
 }
 

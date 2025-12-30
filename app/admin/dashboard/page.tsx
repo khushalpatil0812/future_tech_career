@@ -12,11 +12,19 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([adminApi.getInquiries(), adminApi.getFeedback()]).then(([inqData, feedbackData]) => {
-      setInquiries(inqData)
-      setFeedback(feedbackData)
-      setIsLoading(false)
-    })
+    Promise.all([adminApi.getInquiries(), adminApi.getFeedback()])
+      .then(([inqData, feedbackData]) => {
+        // Ensure we always have arrays
+        setInquiries(Array.isArray(inqData) ? inqData : [])
+        setFeedback(Array.isArray(feedbackData) ? feedbackData : [])
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error loading dashboard data:", error)
+        setInquiries([])
+        setFeedback([])
+        setIsLoading(false)
+      })
   }, [])
 
   if (isLoading) return <div className="p-8 text-center">Loading stats...</div>
@@ -27,7 +35,7 @@ export default function DashboardPage() {
       value: inquiries.length,
       icon: MessageSquare,
       color: "text-blue-500",
-      description: `${inquiries.filter((i) => i.status === "unread").length} unread`,
+      description: `${inquiries.filter((i) => !i.isRead).length} unread`,
     },
     {
       title: "Pending Feedback",
