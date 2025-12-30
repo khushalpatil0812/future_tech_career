@@ -1,27 +1,38 @@
 import { mockData, type Testimonial, type Inquiry } from "./mock-data"
 
-const DELAY = 500
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const publicApi = {
   async getTestimonials(): Promise<Testimonial[]> {
-    await sleep(DELAY)
-    return mockData.testimonials.filter((t) => t.status === "approved")
+    try {
+      const response = await fetch(`${API_BASE_URL}/testimonials/active`)
+      if (!response.ok) throw new Error("Failed to fetch testimonials")
+      const data = await response.json()
+      // Backend returns ApiResponse wrapper with data property
+      return data.data || data
+    } catch (error) {
+      console.error("Error fetching testimonials:", error)
+      return mockData.testimonials.filter((t) => t.status === "approved")
+    }
   },
 
   async submitInquiry(
     data: Omit<Inquiry, "id" | "status" | "createdAt">,
   ): Promise<{ success: boolean; message: string }> {
-    await sleep(DELAY)
-    const newInquiry: Inquiry = {
-      ...data,
-      id: Math.random().toString(36).substr(2, 9),
-      status: "unread",
-      createdAt: new Date().toISOString(),
+    try {
+      const response = await fetch(`${API_BASE_URL}/inquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) throw new Error("Failed to submit inquiry")
+      return await response.json()
+    } catch (error) {
+      console.error("Error submitting inquiry:", error)
+      throw error
     }
-    mockData.inquiries.push(newInquiry)
-    return { success: true, message: "We'll contact you soon!" }
   },
 
   async submitFeedback(data: {
@@ -31,72 +42,153 @@ export const publicApi = {
     feedback: string
     consent: boolean
   }): Promise<{ success: boolean; message: string }> {
-    await sleep(DELAY)
-    const newTestimonial: Testimonial = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: data.name,
-      email: data.email || "",
-      rating: data.rating,
-      feedback: data.feedback,
-      role: null,
-      status: "pending",
-      createdAt: new Date().toISOString(),
+    try {
+      const response = await fetch(`${API_BASE_URL}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) throw new Error("Failed to submit feedback")
+      return await response.json()
+    } catch (error) {
+      console.error("Error submitting feedback:", error)
+      throw error
     }
-    mockData.testimonials.push(newTestimonial)
-    return { success: true, message: "Thank you! Your feedback is under review." }
   },
 
   async getSEO(page: keyof typeof mockData.seo) {
-    await sleep(DELAY)
-    return mockData.seo[page]
+    try {
+      const response = await fetch(`${API_BASE_URL}/seo/${page}`)
+      if (!response.ok) throw new Error("Failed to fetch SEO data")
+      const data = await response.json()
+      // Backend returns ApiResponse wrapper with data property
+      return data.data || data
+    } catch (error) {
+      console.error("Error fetching SEO data:", error)
+      return mockData.seo[page]
+    }
   },
 
   async getContent() {
-    await sleep(DELAY)
-    return mockData.content
+    try {
+      const response = await fetch(`${API_BASE_URL}/content`)
+      if (!response.ok) throw new Error("Failed to fetch content")
+      const data = await response.json()
+      // Backend returns ApiResponse wrapper with data property
+      const contentArray = data.data || data
+      return contentArray.reduce((acc: any, item: any) => {
+        acc[item.section] = { title: item.section, content: item.content }
+        return acc
+      }, {})
+    } catch (error) {
+      console.error("Error fetching content:", error)
+      return mockData.content
+    }
   },
 }
 
 export const adminApi = {
   async login(credentials: { email: string; password: string }) {
-    await sleep(DELAY)
-    if (credentials.email === "admin@futuretech.com" && credentials.password === "admin123") {
-      const token = "mock-admin-token-" + Date.now()
-      localStorage.setItem("admin_token", token)
-      return { success: true, token }
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      })
+      if (!response.ok) throw new Error("Invalid credentials")
+      const data = await response.json()
+      if (data.token) {
+        localStorage.setItem("admin_token", data.token)
+      }
+      return data
+    } catch (error) {
+      console.error("Login error:", error)
+      throw new Error("Invalid credentials")
     }
-    throw new Error("Invalid credentials")
   },
 
   async getInquiries() {
-    await sleep(DELAY)
-    return [...mockData.inquiries].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    try {
+      const token = localStorage.getItem("admin_token")
+      const response = await fetch(`${API_BASE_URL}/admin/inquiries`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) throw new Error("Failed to fetch inquiries")
+      return await response.json()
+    } catch (error) {
+      console.error("Error fetching inquiries:", error)
+      return []
+    }
   },
 
   async getFeedback() {
-    await sleep(DELAY)
-    return [...mockData.testimonials].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    try {
+      const token = localStorage.getItem("admin_token")
+      const response = await fetch(`${API_BASE_URL}/admin/feedback`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) throw new Error("Failed to fetch feedback")
+      return await response.json()
+    } catch (error) {
+      console.error("Error fetching feedback:", error)
+      return []
+    }
   },
 
   async updateTestimonialStatus(id: string, status: "approved" | "rejected") {
-    await sleep(DELAY)
-    const index = mockData.testimonials.findIndex((t) => t.id === id)
-    if (index !== -1) {
-      mockData.testimonials[index].status = status
-      return { success: true }
+    try {
+      const token = localStorage.getItem("admin_token")
+      const response = await fetch(`${API_BASE_URL}/admin/testimonials/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      })
+      if (!response.ok) throw new Error("Failed to update status")
+      return await response.json()
+    } catch (error) {
+      console.error("Error updating testimonial status:", error)
+      throw error
     }
-    throw new Error("Testimonial not found")
   },
 
   async updateContent(content: typeof mockData.content) {
-    await sleep(DELAY)
-    mockData.content = content
-    return { success: true }
+    try {
+      const token = localStorage.getItem("admin_token")
+      const response = await fetch(`${API_BASE_URL}/admin/content`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(content),
+      })
+      if (!response.ok) throw new Error("Failed to update content")
+      return await response.json()
+    } catch (error) {
+      console.error("Error updating content:", error)
+      throw error
+    }
   },
 
   async updateSEO(seo: typeof mockData.seo) {
-    await sleep(DELAY)
-    Object.assign(mockData.seo, seo)
-    return { success: true }
+    try {
+      const token = localStorage.getItem("admin_token")
+      const response = await fetch(`${API_BASE_URL}/admin/seo`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(seo),
+      })
+      if (!response.ok) throw new Error("Failed to update SEO")
+      return await response.json()
+    } catch (error) {
+      console.error("Error updating SEO:", error)
+      throw error
+    }
   },
 }

@@ -22,4 +22,11 @@ public class TestimonialController {
         List<Testimonial> testimonials = testimonialService.getActiveTestimonials(limit);
         return ResponseEntity.ok(ApiResponse.success(testimonials));
     }
+    
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse<List<Testimonial>>> getActiveTestimonialsAlt(
+            @RequestParam(required = false) Integer limit) {
+        List<Testimonial> testimonials = testimonialService.getActiveTestimonials(limit);
+        return ResponseEntity.ok(ApiResponse.success(testimonials));
+    }
 }

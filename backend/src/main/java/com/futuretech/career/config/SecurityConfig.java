@@ -35,10 +35,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/testimonials").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/testimonials/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/feedback").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/content").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/seo/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 // Admin endpoints
