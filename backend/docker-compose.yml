@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: futuretech-db
+    environment:
+      POSTGRES_DB: futuretech_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - futuretech-network
+
+  backend:
+    build: .
+    container_name: futuretech-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: jdbc:postgresql://postgres:5432/futuretech_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: your_super_secret_jwt_key_minimum_32_characters_long_for_production
+      ADMIN_SECRET_KEY: your_admin_setup_secret
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - futuretech-network
+
+volumes:
+  postgres_data:
+
+networks:
+  futuretech-network:
+    driver: bridge
