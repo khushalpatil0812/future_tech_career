@@ -155,25 +155,56 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SERVICES_DETAIL.map((service, idx) => (
-              <Card key={idx} className="hover-lift border-transparent hover:border-primary/50 transition-all">
-                <CardHeader>
-                  <div className="flex justify-between items-start mb-2">
-                    <CardTitle className="text-xl">{service.title}</CardTitle>
-                    <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
+              <Card 
+                key={idx} 
+                className="group relative overflow-hidden border-2 border-transparent hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 bg-gradient-to-br from-card to-card/50"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                {/* Animated gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Animated border glow */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-lg opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500" />
+                
+                <CardHeader className="relative z-10">
+                  <div className="flex justify-between items-start mb-3">
+                    <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors duration-300">
+                      {service.title}
+                    </CardTitle>
+                    <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 animate-pulse group-hover:animate-none">
                       {service.price}
                     </span>
                   </div>
-                  <CardDescription className="text-sm">{service.description}</CardDescription>
+                  <CardDescription className="text-sm leading-relaxed">
+                    {service.description}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
+                
+                <CardContent className="relative z-10">
+                  <ul className="space-y-3">
                     {service.features.map((feature, fIdx) => (
-                      <li key={fIdx} className="flex items-start">
-                        <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
+                      <li 
+                        key={fIdx} 
+                        className="flex items-start group/item"
+                        style={{ animationDelay: `${(idx * 100) + (fIdx * 50)}ms` }}
+                      >
+                        <div className="relative">
+                          <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform duration-300" />
+                          <div className="absolute inset-0 bg-primary/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                        <span className="text-sm text-muted-foreground group-hover/item:text-foreground transition-colors duration-200">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
+                  
+                  {/* Hover indicator */}
+                  <div className="mt-6 pt-4 border-t border-border/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-xs text-primary font-medium text-center animate-pulse">
+                      Click to learn more →
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
