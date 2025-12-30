@@ -20,9 +20,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token")
-    if (token) {
-      setIsAuthenticated(true)
+    // Only access localStorage on the client side
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("admin_token")
+      if (token) {
+        setIsAuthenticated(true)
+      }
     }
     setIsLoading(false)
   }, [])
@@ -35,13 +38,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, isLoading, pathname, router])
 
   const login = (token: string) => {
-    localStorage.setItem("admin_token", token)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("admin_token", token)
+    }
     setIsAuthenticated(true)
     router.push("/admin/dashboard")
   }
 
   const logout = () => {
-    localStorage.removeItem("admin_token")
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem("admin_token")
+    }
     setIsAuthenticated(false)
     router.push("/admin/login")
   }
