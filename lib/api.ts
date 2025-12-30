@@ -119,7 +119,11 @@ export const adminApi = {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!response.ok) throw new Error("Failed to fetch inquiries")
-      return await response.json()
+      const result = await response.json()
+      // Backend returns ApiResponse wrapper with PaginationResponse inside
+      const data = result.data || result
+      // PaginationResponse has items array
+      return data.items || data
     } catch (error) {
       console.error("Error fetching inquiries:", error)
       return []
@@ -133,7 +137,11 @@ export const adminApi = {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!response.ok) throw new Error("Failed to fetch feedback")
-      return await response.json()
+      const result = await response.json()
+      // Backend returns ApiResponse wrapper with PaginationResponse inside
+      const data = result.data || result
+      // PaginationResponse has items array
+      return data.items || data
     } catch (error) {
       console.error("Error fetching feedback:", error)
       return []
