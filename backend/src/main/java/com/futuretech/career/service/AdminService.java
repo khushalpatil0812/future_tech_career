@@ -41,24 +41,23 @@ public class AdminService {
         );
     }
     
-    public PaginationResponse<Page<Inquiry>> getAllInquiries(int page, int limit, Boolean isRead) {
+    public PaginationResponse<Inquiry> getAllInquiries(int page, int limit, Boolean isRead) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
         
-        Page<Inquiry> inquiries;
+        Page<Inquiry> inquiryPage;
         if (isRead != null) {
-            inquiries = inquiryRepository.findByIsRead(isRead, pageRequest);
+            inquiryPage = inquiryRepository.findByIsRead(isRead, pageRequest);
         } else {
-            inquiries = inquiryRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+            inquiryPage = inquiryRepository.findAllByOrderByCreatedAtDesc(pageRequest);
         }
         
-        PaginationResponse.PaginationInfo paginationInfo = new PaginationResponse.PaginationInfo(
-                inquiries.getTotalElements(),
-                page,
-                limit,
-                inquiries.getTotalPages()
+        return new PaginationResponse<>(
+                inquiryPage.getContent(),
+                inquiryPage.getNumber(),
+                inquiryPage.getSize(),
+                inquiryPage.getTotalElements(),
+                inquiryPage.getTotalPages()
         );
-        
-        return new PaginationResponse<>(inquiries, paginationInfo);
     }
     
     public Inquiry markInquiryAsRead(String id, boolean isRead) {
@@ -84,24 +83,23 @@ public class AdminService {
         }
     }
     
-    public PaginationResponse<Page<Feedback>> getAllFeedback(int page, int limit, String status) {
+    public PaginationResponse<Feedback> getAllFeedback(int page, int limit, String status) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
         
-        Page<Feedback> feedback;
-        if (status != null && !status.isEmpty()) {
-            feedback = feedbackRepository.findByStatus(status, pageRequest);
+        Page<Feedback> feedbackPage;
+        if (status != null) {
+            feedbackPage = feedbackRepository.findByStatus(status, pageRequest);
         } else {
-            feedback = feedbackRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+            feedbackPage = feedbackRepository.findAllByOrderByCreatedAtDesc(pageRequest);
         }
         
-        PaginationResponse.PaginationInfo paginationInfo = new PaginationResponse.PaginationInfo(
-                feedback.getTotalElements(),
-                page,
-                limit,
-                feedback.getTotalPages()
+        return new PaginationResponse<>(
+                feedbackPage.getContent(),
+                feedbackPage.getNumber(),
+                feedbackPage.getSize(),
+                feedbackPage.getTotalElements(),
+                feedbackPage.getTotalPages()
         );
-        
-        return new PaginationResponse<>(feedback, paginationInfo);
     }
     
     @Transactional
@@ -140,23 +138,22 @@ public class AdminService {
         return feedbackRepository.save(feedback);
     }
     
-    public PaginationResponse<Page<Testimonial>> getAllTestimonials(int page, int limit, Boolean isActive) {
+    public PaginationResponse<Testimonial> getAllTestimonials(int page, int limit, Boolean isActive) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
         
-        Page<Testimonial> testimonials;
+        Page<Testimonial> testimonialPage;
         if (isActive != null) {
-            testimonials = testimonialRepository.findByIsActive(isActive, pageRequest);
+            testimonialPage = testimonialRepository.findByIsActive(isActive, pageRequest);
         } else {
-            testimonials = testimonialRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+            testimonialPage = testimonialRepository.findAllByOrderByCreatedAtDesc(pageRequest);
         }
         
-        PaginationResponse.PaginationInfo paginationInfo = new PaginationResponse.PaginationInfo(
-                testimonials.getTotalElements(),
-                page,
-                limit,
-                testimonials.getTotalPages()
+        return new PaginationResponse<>(
+                testimonialPage.getContent(),
+                testimonialPage.getNumber(),
+                testimonialPage.getSize(),
+                testimonialPage.getTotalElements(),
+                testimonialPage.getTotalPages()
         );
-        
-        return new PaginationResponse<>(testimonials, paginationInfo);
     }
 }

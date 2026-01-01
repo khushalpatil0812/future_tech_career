@@ -3,9 +3,11 @@ package com.futuretech.career.config;
 import com.futuretech.career.model.Admin;
 import com.futuretech.career.model.Content;
 import com.futuretech.career.model.SEO;
+import com.futuretech.career.model.Testimonial;
 import com.futuretech.career.repository.AdminRepository;
 import com.futuretech.career.repository.ContentRepository;
 import com.futuretech.career.repository.SEORepository;
+import com.futuretech.career.repository.TestimonialRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +22,7 @@ public class DataInitializer implements CommandLineRunner {
     private final AdminRepository adminRepository;
     private final ContentRepository contentRepository;
     private final SEORepository seoRepository;
+    private final TestimonialRepository testimonialRepository;
     private final PasswordEncoder passwordEncoder;
     
     @Override
@@ -27,6 +30,7 @@ public class DataInitializer implements CommandLineRunner {
         initializeAdmin();
         initializeContent();
         initializeSEO();
+        initializeTestimonials();
     }
     
     private void initializeAdmin() {
@@ -83,6 +87,31 @@ public class DataInitializer implements CommandLineRunner {
             }
             
             log.info("✅ Default SEO metadata created");
+        }
+    }
+    
+    private void initializeTestimonials() {
+        if (testimonialRepository.count() == 0) {
+            Object[][] testimonialData = {
+                {"Priya Sharma", "priya.sharma@email.com", "Software Engineer", 5, "Future Tech helped me land my dream job at a top tech company. Their resume writing service was exceptional!", true},
+                {"Rahul Verma", "rahul.verma@email.com", "Data Analyst", 5, "The interview preparation sessions boosted my confidence tremendously. Highly recommend their services!", true},
+                {"Anita Patel", "anita.patel@email.com", "Product Manager", 5, "Professional and dedicated team. They helped me transition to a better role with excellent guidance.", true},
+                {"Amit Kumar", "amit.kumar@email.com", "Business Analyst", 4, "Great experience with their career counseling service. Very responsive and helpful throughout the process.", true},
+                {"Sneha Reddy", "sneha.reddy@email.com", "Marketing Manager", 5, "Their LinkedIn optimization service significantly improved my profile visibility. Got multiple interview calls!", true}
+            };
+            
+            for (Object[] data : testimonialData) {
+                Testimonial testimonial = new Testimonial();
+                testimonial.setName((String) data[0]);
+                testimonial.setEmail((String) data[1]);
+                testimonial.setRole((String) data[2]);
+                testimonial.setRating((Integer) data[3]);
+                testimonial.setMessage((String) data[4]);
+                testimonial.setIsActive((Boolean) data[5]);
+                testimonialRepository.save(testimonial);
+            }
+            
+            log.info("✅ Sample testimonials created");
         }
     }
 }

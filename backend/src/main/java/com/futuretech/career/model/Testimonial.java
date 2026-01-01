@@ -31,13 +31,28 @@ public class Testimonial {
     
     private String email;
     
+    @Column(name = "position")
+    private String position;
+    
+    @Column(name = "company")
+    private String company;
+    
     @Column(nullable = false)
     private Integer rating;
     
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
     
+    @Column(name = "content", columnDefinition = "TEXT")
+    private String content;
+    
     private String role;
+    
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+    
+    @Column(name = "display_order")
+    private Integer displayOrder = 0;
     
     @Column(nullable = false)
     private Boolean isActive = true;
@@ -50,3 +65,4 @@ public class Testimonial {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 }
+

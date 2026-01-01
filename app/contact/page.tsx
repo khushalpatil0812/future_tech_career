@@ -31,11 +31,22 @@ export default function ContactPage() {
   async function onSubmit(values: any) {
     setIsSubmitting(true)
     try {
+      console.log("Submitting inquiry:", values)
       const response = await publicApi.submitInquiry(values)
-      toast({ title: "Success", description: response.message })
+      console.log("Response:", response)
+      toast({ 
+        title: "Success!", 
+        description: "Thank you! We'll contact you within 24 hours." 
+      })
       form.reset()
-    } catch (error) {
-      toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" })
+    } catch (error: any) {
+      console.error("Error submitting inquiry:", error)
+      const errorMessage = error?.message || "Something went wrong. Please try again."
+      toast({ 
+        title: "Error", 
+        description: errorMessage, 
+        variant: "destructive" 
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -101,9 +112,9 @@ export default function ContactPage() {
                     rules={{ required: "Name is required", minLength: { value: 3, message: "Min 3 chars" } }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name</FormLabel>
+                        <FormLabel>Full Name *</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <Input placeholder="John Doe (minimum 3 characters)" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -118,7 +129,7 @@ export default function ContactPage() {
                     }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email *</FormLabel>
                         <FormControl>
                           <Input placeholder="john@example.com" {...field} />
                         </FormControl>
@@ -135,7 +146,7 @@ export default function ContactPage() {
                     }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>Phone Number * (10 digits only)</FormLabel>
                         <FormControl>
                           <Input placeholder="1234567890" {...field} />
                         </FormControl>
@@ -149,7 +160,7 @@ export default function ContactPage() {
                     rules={{ required: "Please select an inquiry type" }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Inquiry Type</FormLabel>
+                        <FormLabel>Inquiry Type *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -174,9 +185,9 @@ export default function ContactPage() {
                     rules={{ required: "Message is required", minLength: { value: 20, message: "Min 20 chars" } }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Message</FormLabel>
+                        <FormLabel>Message * (minimum 20 characters)</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="How can we help you?" className="min-h-[120px]" {...field} />
+                          <Textarea placeholder="How can we help you? (minimum 20 characters)" className="min-h-[120px]" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

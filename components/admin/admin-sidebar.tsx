@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, MessageSquare, Star, Settings, Shield, LogOut, CheckCircle } from "lucide-react"
+import { LayoutDashboard, MessageSquare, Star, Settings, Shield, LogOut, CheckCircle, Building2, Handshake, Briefcase, Users, Building, FileText, Target } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 
 const ADMIN_LINKS = [
@@ -11,6 +11,14 @@ const ADMIN_LINKS = [
   { name: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { name: "Feedback", href: "/admin/feedback", icon: Star },
   { name: "Testimonials", href: "/admin/testimonials", icon: CheckCircle },
+  { name: "Manage Testimonials", href: "/admin/testimonials-manage", icon: Star },
+  { name: "Companies", href: "/admin/companies", icon: Building2 },
+  { name: "Partners", href: "/admin/partners", icon: Handshake },
+  { name: "Job Openings", href: "/admin/job-openings", icon: Briefcase },
+  { name: "Candidates", href: "/admin/candidates", icon: Users },
+  { name: "Clients", href: "/admin/clients", icon: Building },
+  { name: "Contracts", href: "/admin/contracts", icon: FileText },
+  { name: "Resource Requirements", href: "/admin/resource-requirements", icon: Target },
   { name: "Content", href: "/admin/content", icon: Settings },
   { name: "SEO", href: "/admin/seo", icon: Shield },
 ]

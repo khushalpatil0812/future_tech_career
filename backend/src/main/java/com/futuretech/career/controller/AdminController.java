@@ -31,13 +31,13 @@ public class AdminController {
     
     // Inquiry Management
     @GetMapping("/inquiries")
-    public ResponseEntity<ApiResponse<PaginationResponse<Page<Inquiry>>>> getAllInquiries(
+    public ResponseEntity<ApiResponse<PaginationResponse<Inquiry>>> getAllInquiries(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) Boolean status) {
         
         Boolean isRead = status != null && status ? true : null;
-        PaginationResponse<Page<Inquiry>> response = adminService.getAllInquiries(page, limit, isRead);
+        PaginationResponse<Inquiry> response = adminService.getAllInquiries(page, limit, isRead);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
     
@@ -48,23 +48,23 @@ public class AdminController {
         
         boolean isRead = body.getOrDefault("isRead", true);
         adminService.markInquiryAsRead(id, isRead);
-        return ResponseEntity.ok(ApiResponse.success("Inquiry marked as " + (isRead ? "read" : "unread"), null));
+        return ResponseEntity.ok(ApiResponse.success("Inquiry marked as " + (isRead ? "read" : "unread")));
     }
     
     @DeleteMapping("/inquiries/{id}")
     public ResponseEntity<ApiResponse<String>> deleteInquiry(@PathVariable String id) {
         adminService.deleteInquiry(id);
-        return ResponseEntity.ok(ApiResponse.success("Inquiry deleted successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Inquiry deleted successfully"));
     }
     
     // Feedback Management
     @GetMapping("/feedback")
-    public ResponseEntity<ApiResponse<PaginationResponse<Page<Feedback>>>> getAllFeedback(
+    public ResponseEntity<ApiResponse<PaginationResponse<Feedback>>> getAllFeedback(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) String status) {
         
-        PaginationResponse<Page<Feedback>> response = adminService.getAllFeedback(page, limit, status);
+        PaginationResponse<Feedback> response = adminService.getAllFeedback(page, limit, status);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
     
@@ -75,52 +75,13 @@ public class AdminController {
         
         String role = body != null ? body.get("role") : null;
         adminService.approveFeedback(id, role);
-        return ResponseEntity.ok(ApiResponse.success("Feedback approved and added to testimonials", null));
+        return ResponseEntity.ok(ApiResponse.success("Feedback approved and added to testimonials"));
     }
     
     @PostMapping("/feedback/{id}/reject")
     public ResponseEntity<ApiResponse<String>> rejectFeedback(@PathVariable String id) {
         adminService.rejectFeedback(id);
-        return ResponseEntity.ok(ApiResponse.success("Feedback rejected", null));
-    }
-    
-    // Testimonial Management
-    @GetMapping("/testimonials")
-    public ResponseEntity<ApiResponse<PaginationResponse<Page<Testimonial>>>> getAllTestimonials(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(required = false) Boolean status) {
-        
-        PaginationResponse<Page<Testimonial>> response = adminService.getAllTestimonials(page, limit, status);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-    
-    @PatchMapping("/testimonials/{id}/toggle")
-    public ResponseEntity<ApiResponse<String>> toggleTestimonialStatus(
-            @PathVariable String id,
-            @RequestBody Map<String, Boolean> body) {
-        
-        Testimonial testimonial = new Testimonial();
-        testimonial.setIsActive(body.get("isActive"));
-        testimonialService.updateTestimonial(id, testimonial);
-        return ResponseEntity.ok(ApiResponse.success("Testimonial status updated", null));
-    }
-    
-    @PatchMapping("/testimonials/{id}")
-    public ResponseEntity<ApiResponse<String>> updateTestimonial(
-            @PathVariable String id,
-            @RequestBody Map<String, String> body) {
-        
-        Testimonial testimonial = new Testimonial();
-        testimonial.setRole(body.get("role"));
-        testimonialService.updateTestimonial(id, testimonial);
-        return ResponseEntity.ok(ApiResponse.success("Testimonial updated", null));
-    }
-    
-    @DeleteMapping("/testimonials/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteTestimonial(@PathVariable String id) {
-        testimonialService.deleteTestimonial(id);
-        return ResponseEntity.ok(ApiResponse.success("Testimonial deleted", null));
+        return ResponseEntity.ok(ApiResponse.success("Feedback rejected"));
     }
     
     // Content Management
@@ -130,7 +91,7 @@ public class AdminController {
             @RequestBody Map<String, String> body) {
         
         contentService.updateContent(section, body.get("content"));
-        return ResponseEntity.ok(ApiResponse.success("Content updated successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Content updated successfully"));
     }
     
     // SEO Management
@@ -140,6 +101,6 @@ public class AdminController {
             @Valid @RequestBody SEO seoUpdates) {
         
         seoService.updateSEO(page, seoUpdates);
-        return ResponseEntity.ok(ApiResponse.success("SEO metadata updated", null));
+        return ResponseEntity.ok(ApiResponse.success("SEO metadata updated"));
     }
 }

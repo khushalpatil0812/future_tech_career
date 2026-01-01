@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { publicApi } from "@/lib/api"
 import { Hero } from "@/components/sections/hero"
 import { TestimonialsSection } from "@/components/sections/testimonials"
+import { PartnerLogos } from "@/components/sections/partner-logos"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [heroTitle, setHeroTitle] = useState("FUTURE-TECH CAREER")
   const [heroSubtitle, setHeroSubtitle] = useState("HELPING YOU BUILD YOUR CAREER")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [phoneError, setPhoneError] = useState("")
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -33,15 +35,54 @@ export default function HomePage() {
     }).catch(() => {})
   }, [])
 
+  const validatePhone = (phone: string) => {
+    // Remove any non-digit characters
+    const digitsOnly = phone.replace(/\D/g, '')
+    
+    if (digitsOnly.length === 0) {
+      setPhoneError("")
+      return true
+    }
+    
+    if (digitsOnly.length !== 10) {
+      setPhoneError("Phone must be exactly 10 digits")
+      return false
+    }
+    
+    setPhoneError("")
+    return true
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    // Only allow digits and limit to 10
+    const digitsOnly = value.replace(/\D/g, '').slice(0, 10)
+    setFormData({ ...formData, phone: digitsOnly })
+    validatePhone(digitsOnly)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate phone before submission
+    if (formData.phone && !validatePhone(formData.phone)) {
+      toast({ 
+        title: "Validation Error", 
+        description: "Please enter a valid 10-digit phone number", 
+        variant: "destructive" 
+      })
+      return
+    }
+    
     setIsSubmitting(true)
     try {
-      const response = await publicApi.submitInquiry(formData)
+      const response = await publicApi.submitInquiry({ ...formData, isRead: false })
       toast({ title: "Success", description: response.message })
       setFormData({ fullName: "", email: "", phone: "", inquiryType: "" as InquiryType, message: "" })
+      setPhoneError("")
     } catch (error) {
-      toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" })
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong. Please try again."
+      toast({ title: "Error", description: errorMessage, variant: "destructive" })
     } finally {
       setIsSubmitting(false)
     }
@@ -85,54 +126,54 @@ export default function HomePage() {
       <Hero title={heroTitle} subtitle={heroSubtitle} />
 
       {/* About Section */}
-      <section id="about" className="relative py-24 overflow-hidden">
+      <section id="about" className="relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 animate-gradient" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto space-y-12">
-            <div className="text-center space-y-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl mx-auto space-y-8 sm:space-y-10 md:space-y-12">
+            <div className="text-center space-y-3 sm:space-y-4">
               <div className="inline-block">
-                <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-gradient">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 sm:mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-gradient px-4">
                   About Us
                 </h2>
-                <div className="h-1 w-24 mx-auto bg-gradient-to-r from-primary to-accent rounded-full" />
+                <div className="h-1 w-16 sm:w-24 mx-auto bg-gradient-to-r from-primary to-accent rounded-full" />
               </div>
-              <p className="text-xl text-muted-foreground font-medium">Careers Made Simple</p>
+              <p className="text-lg sm:text-xl text-muted-foreground font-medium px-4">Careers Made Simple</p>
             </div>
 
-            <div className="space-y-6 pt-8">
-              <div className="prose prose-slate max-w-none">
-                <p className="text-lg leading-relaxed text-muted-foreground text-center">
+            <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8">
+              <div className="prose prose-slate max-w-none px-4">
+                <p className="text-base sm:text-lg leading-relaxed text-muted-foreground text-center">
                   Future Tech Consultancy is a career support and recruitment consultancy helping job seekers explore
                   suitable opportunities and improve job readiness. We provide resume writing, interview preparation,
                   LinkedIn profile optimization, and job search assistance. We also offer optional short-term internships with certification.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
-                <div className="group relative p-8 rounded-2xl bg-card/50 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative space-y-4">
-                    <h3 className="text-2xl font-bold text-primary flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 pt-6 sm:pt-8">
+                <div className="group relative p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative space-y-3 sm:space-y-4">
+                    <h3 className="text-xl sm:text-2xl font-bold text-primary flex items-center gap-2 sm:gap-3">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary animate-pulse" />
                       Why Us
                     </h3>
-                    <p className="text-lg leading-relaxed text-muted-foreground group-hover:text-foreground transition-colors">
+                    <p className="text-sm sm:text-base md:text-lg leading-relaxed text-muted-foreground group-hover:text-foreground transition-colors">
                       We provide honest and ethical career guidance focused on long-term growth. Our approach is practical,
                       transparent, and tailored to each candidate's skills and goals.
                     </p>
                   </div>
                 </div>
-                <div className="group relative p-8 rounded-2xl bg-card/50 backdrop-blur-sm border-2 border-accent/20 hover:border-accent/50 transition-all duration-500 hover:shadow-xl hover:shadow-accent/20 hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative space-y-4">
-                    <h3 className="text-2xl font-bold text-accent flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                <div className="group relative p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border-2 border-accent/20 hover:border-accent/50 transition-all duration-500 hover:shadow-xl hover:shadow-accent/20 hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative space-y-3 sm:space-y-4">
+                    <h3 className="text-xl sm:text-2xl font-bold text-accent flex items-center gap-2 sm:gap-3">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-accent animate-pulse" />
                       What We Do
                     </h3>
-                    <p className="text-lg leading-relaxed text-muted-foreground group-hover:text-foreground transition-colors">
+                    <p className="text-sm sm:text-base md:text-lg leading-relaxed text-muted-foreground group-hover:text-foreground transition-colors">
                       We support job seekers with career guidance and recruitment assistance. Our services include resume writing,
                       interview preparation, LinkedIn optimization, and structured job search support.
                     </p>
@@ -141,21 +182,21 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-3xl p-1 mt-12 group">
+            <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-1 mt-8 sm:mt-10 md:mt-12 group">
               {/* Animated border gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-card rounded-3xl p-8 md:p-12">
-                <h3 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Why Choose Us?</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <div className="relative bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent px-4">Why Choose Us?</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
                   {[
                     { value: "1500+", label: "Successful Placements", color: "text-primary" },
                     { value: "98%", label: "Satisfaction Rate", color: "text-accent" },
                     { value: "10+", label: "Years Experience", color: "text-secondary" },
                     { value: "24/7", label: "Support", color: "text-primary" },
                   ].map((stat, idx) => (
-                    <div key={idx} className="text-center group/stat hover:scale-110 transition-transform duration-300">
-                      <div className={`text-5xl font-bold ${stat.color} mb-3 animate-pulse`}>{stat.value}</div>
-                      <div className="text-sm text-muted-foreground font-medium group-hover/stat:text-foreground transition-colors">{stat.label}</div>
+                    <div key={idx} className="text-center group/stat hover:scale-105 sm:hover:scale-110 transition-transform duration-300 px-2">
+                      <div className={`text-3xl sm:text-4xl md:text-5xl font-bold ${stat.color} mb-2 sm:mb-3 animate-pulse`}>{stat.value}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground font-medium group-hover/stat:text-foreground transition-colors">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -166,24 +207,24 @@ export default function HomePage() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="relative py-24 overflow-hidden">
+      <section id="services" className="relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute top-20 right-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-10 sm:top-20 right-10 sm:right-20 w-48 h-48 sm:w-72 sm:h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 sm:bottom-20 left-10 sm:left-20 w-48 h-48 sm:w-72 sm:h-72 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-sm font-medium text-primary">Our Services</span>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12 md:mb-16 space-y-3 sm:space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-3 sm:mb-4">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs sm:text-sm font-medium text-primary">Our Services</span>
             </div>
-            <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 sm:mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent px-4">
               Our Professional Services
             </h2>
-            <p className="text-xl text-muted-foreground">Tailored solutions for every stage of your career journey.</p>
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground px-4">Tailored solutions for every stage of your career journey.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {SERVICES_DETAIL.map((service, idx) => (
               <Card 
                 key={idx} 
@@ -250,30 +291,33 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Partner Logos Section */}
+      <PartnerLogos />
+
       {/* Contact Section */}
-      <section id="contact" className="relative py-24 overflow-hidden">
+      <section id="contact" className="relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-0 right-0 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-sm font-medium text-primary">Contact Us</span>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-10 sm:mb-12 md:mb-16 space-y-3 sm:space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-3 sm:mb-4">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs sm:text-sm font-medium text-primary">Contact Us</span>
             </div>
-            <h2 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent px-4">
               Get in Touch
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Have questions? Our team is here to help you navigate your next career move.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            <div className="space-y-8">
-              <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto">
+            <div className="space-y-6 sm:space-y-8">
+              <div className="space-y-4 sm:space-y-6">
                 {[
                   { icon: Mail, label: "Email", value: "carreirsfuturetech@gmail.com" },
                   { icon: Phone, label: "Phone", value: "7385552872 / 9270315005" },
@@ -284,19 +328,19 @@ export default function HomePage() {
                     link: "https://www.linkedin.com/company/future-tech-career/",
                   },
                 ].map((item, idx) => (
-                  <div key={idx} className="group/contact flex items-center space-x-4 p-4 rounded-xl hover:bg-primary/5 transition-all duration-300 hover:scale-105">
-                    <div className="relative w-14 h-14 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover/contact:shadow-lg group-hover/contact:shadow-primary/30 transition-all duration-300">
-                      <item.icon className="h-6 w-6 text-primary group-hover/contact:scale-110 transition-transform duration-300" />
+                  <div key={idx} className="group/contact flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl hover:bg-primary/5 transition-all duration-300 hover:scale-105">
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover/contact:shadow-lg group-hover/contact:shadow-primary/30 transition-all duration-300 flex-shrink-0">
+                      <item.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary group-hover/contact:scale-110 transition-transform duration-300" />
                       <div className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover/contact:opacity-100 transition-opacity duration-300" />
                     </div>
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground">{item.label}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs sm:text-sm font-medium text-muted-foreground">{item.label}</div>
                       {item.link ? (
-                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
+                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-foreground hover:text-primary transition-colors break-words">
                           {item.value}
                         </a>
                       ) : (
-                        <div className="text-foreground">{item.value}</div>
+                        <div className="text-sm sm:text-base text-foreground break-words">{item.value}</div>
                       )}
                     </div>
                   </div>
@@ -308,12 +352,12 @@ export default function HomePage() {
               {/* Card gradient background */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
               
-              <CardHeader className="relative z-10">
-                <CardTitle className="text-2xl">Send us a message</CardTitle>
-                <CardDescription>Fill out the form below and we'll get back to you shortly.</CardDescription>
+              <CardHeader className="relative z-10 p-4 sm:p-6">
+                <CardTitle className="text-xl sm:text-2xl">Send us a message</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Fill out the form below and we'll get back to you shortly.</CardDescription>
               </CardHeader>
-              <CardContent className="relative z-10">"
-                <form onSubmit={handleSubmit} className="space-y-4">
+              <CardContent className="relative z-10 p-4 sm:p-6">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Full Name</label>
                     <Input
@@ -332,11 +376,28 @@ export default function HomePage() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-1.5 block">Phone</label>
+                    <label className="text-sm font-medium mb-1.5 block">Phone (10 digits)</label>
                     <Input
+                      type="tel"
+                      placeholder="1234567890"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={handlePhoneChange}
+                      maxLength={10}
+                      pattern="[0-9]{10}"
+                      className={phoneError ? "border-red-500" : ""}
                     />
+                    {phoneError && (
+                      <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                        <span className="inline-block w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                        {phoneError}
+                      </p>
+                    )}
+                    {formData.phone.length > 0 && !phoneError && formData.phone.length === 10 && (
+                      <p className="text-xs text-green-500 mt-1.5 flex items-center gap-1">
+                        <span className="inline-block w-1 h-1 rounded-full bg-green-500" />
+                        Valid phone number
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Inquiry Type</label>
