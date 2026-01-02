@@ -31,15 +31,17 @@ git push origin main
 
 # 2. Go to https://dashboard.render.com
 # 3. New+ → Web Service
-# 4. Connect GitHub: khushalpatil0812/future_tech_career
-# 5. Configure:
+# 4. Connect GitHub account (if first time)
+# 5. Select repository: khushalpatil0812/future_tech_career
+# 6. Click "Connect" button
+# 7. Configure settings:
 ```
 
 **Settings:**
 - Name: `future-tech-career-backend`
+- **Environment**: Select `Docker` (Java not available in free tier)
 - Root Directory: `backend`
-- Build Command: `mvn clean package -DskipTests`
-- Start Command: `java -jar target/career-backend-1.0.0.jar`
+- **Leave Build and Start Commands EMPTY** (Docker will handle it)
 - Instance Type: `Free`
 
 **Environment Variables:**
