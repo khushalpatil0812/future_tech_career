@@ -226,6 +226,7 @@ export default function CompaniesPage() {
                 <Label htmlFor="name">Company Name *</Label>
                 <Input
                   id="name"
+                  name="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -236,6 +237,7 @@ export default function CompaniesPage() {
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
+                  name="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
@@ -245,6 +247,7 @@ export default function CompaniesPage() {
                 <Label htmlFor="logoUrl">Logo URL</Label>
                 <Input
                   id="logoUrl"
+                  name="logoUrl"
                   value={formData.logoUrl}
                   onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
                   placeholder="https://example.com/logo.png"
@@ -254,6 +257,7 @@ export default function CompaniesPage() {
                 <Label htmlFor="websiteUrl">Website URL</Label>
                 <Input
                   id="websiteUrl"
+                  name="websiteUrl"
                   value={formData.websiteUrl}
                   onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
                   placeholder="https://example.com"
@@ -264,6 +268,7 @@ export default function CompaniesPage() {
                   <Label htmlFor="industry">Industry</Label>
                   <Input
                     id="industry"
+                    name="industry"
                     value={formData.industry}
                     onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                     placeholder="e.g., Technology, Finance"
@@ -273,6 +278,7 @@ export default function CompaniesPage() {
                   <Label htmlFor="location">Location</Label>
                   <Input
                     id="location"
+                    name="location"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     placeholder="e.g., Pune, India"
@@ -283,10 +289,11 @@ export default function CompaniesPage() {
                 <Label htmlFor="displayOrder">Display Order</Label>
                 <Input
                   id="displayOrder"
+                  name="displayOrder"
                   type="number"
                   min={0}
                   value={formData.displayOrder}
-                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
                 />
               </div>
               <div className="flex items-center space-x-2">

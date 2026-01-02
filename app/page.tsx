@@ -186,15 +186,16 @@ export default function HomePage() {
               {/* Animated border gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12">
-                <h3 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent px-4">Why Choose Us?</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent px-4">Why Choose Future-Tech Career?</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
                   {[
-                    { value: "1500+", label: "Successful Placements", color: "text-primary" },
-                    { value: "98%", label: "Satisfaction Rate", color: "text-accent" },
-                    { value: "10+", label: "Years Experience", color: "text-secondary" },
-                    { value: "24/7", label: "Support", color: "text-primary" },
+                    { value: "50+", label: "Candidates Placed", color: "text-primary", icon: "👥" },
+                    { value: "95%", label: "Client Satisfaction", color: "text-accent", icon: "⭐" },
+                    { value: "3+", label: "Years Experience", color: "text-secondary", icon: "📅" },
+                    { value: "24/7", label: "Career Support", color: "text-primary", icon: "💬" },
                   ].map((stat, idx) => (
                     <div key={idx} className="text-center group/stat hover:scale-105 sm:hover:scale-110 transition-transform duration-300 px-2">
+                      <div className="text-2xl sm:text-3xl mb-2">{stat.icon}</div>
                       <div className={`text-3xl sm:text-4xl md:text-5xl font-bold ${stat.color} mb-2 sm:mb-3 animate-pulse`}>{stat.value}</div>
                       <div className="text-xs sm:text-sm text-muted-foreground font-medium group-hover/stat:text-foreground transition-colors">{stat.label}</div>
                     </div>

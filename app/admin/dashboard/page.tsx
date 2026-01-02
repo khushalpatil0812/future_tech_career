@@ -5,29 +5,64 @@ import { adminApi } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MessageSquare, Star, CheckCircle, Clock } from "lucide-react"
 import type { Inquiry, Testimonial } from "@/lib/mock-data"
+import { logger } from "@/lib/logger"
 
 export default function DashboardPage() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
   const [feedback, setFeedback] = useState<Testimonial[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string>("")
 
   useEffect(() => {
-    Promise.all([adminApi.getInquiries(), adminApi.getFeedback()])
-      .then(([inqData, feedbackData]) => {
-        // Ensure we always have arrays
-        setInquiries(Array.isArray(inqData) ? inqData : [])
-        setFeedback(Array.isArray(feedbackData) ? feedbackData : [])
-        setIsLoading(false)
-      })
-      .catch((error) => {
+    const loadData = async () => {
+      try {
+        const [inqData, feedbackData] = await Promise.all([
+          adminApi.getInquiries(), 
+          adminApi.getFeedback()
+        ])
+        
+        // Ensure we always have arrays and normalize the data
+        const normalizedInquiries = Array.isArray(inqData) ? inqData.map((inq: any) => ({
+          ...inq,
+          createdAt: Array.isArray(inq.createdAt) 
+            ? new Date(inq.createdAt[0], inq.createdAt[1] - 1, inq.createdAt[2], inq.createdAt[3] || 0, inq.createdAt[4] || 0, inq.createdAt[5] || 0).toISOString()
+            : inq.createdAt
+        })) : []
+        
+        const normalizedFeedback = Array.isArray(feedbackData) ? feedbackData.map((fb: any) => ({
+          ...fb,
+          createdAt: Array.isArray(fb.createdAt)
+            ? new Date(fb.createdAt[0], fb.createdAt[1] - 1, fb.createdAt[2], fb.createdAt[3] || 0, fb.createdAt[4] || 0, fb.createdAt[5] || 0).toISOString()
+            : fb.createdAt
+        })) : []
+        
+        setInquiries(normalizedInquiries)
+        setFeedback(normalizedFeedback)
+      } catch (error: any) {
         logger.error("Error loading dashboard data:", error)
+        setError(error?.message || "Failed to load data")
         setInquiries([])
         setFeedback([])
+      } finally {
         setIsLoading(false)
-      })
+      }
+    }
+    
+    loadData()
   }, [])
 
   if (isLoading) return <div className="p-8 text-center">Loading stats...</div>
+
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-semibold">Error loading data</h3>
+          <p className="text-red-600 text-sm mt-2">{error}</p>
+        </div>
+      </div>
+    )
+  }
 
   const stats = [
     {

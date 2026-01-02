@@ -22,7 +22,7 @@ export default function ResourceRequirementsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editingRequirement, setEditingRequirement] = useState<any | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -48,7 +48,7 @@ export default function ResourceRequirementsPage() {
   const fetchData = async () => {
     try {
       const [requirementsData, clientsData] = await Promise.all([
-        adminApi.getResourceRequirements({ page: 0, size: 100, status: filterStatus || undefined }),
+        adminApi.getResourceRequirements({ page: 0, size: 100, status: (filterStatus && filterStatus !== "all") ? filterStatus : undefined }),
         adminApi.getActiveClients()
       ]);
       setRequirements(requirementsData.content || requirementsData.items || []);
@@ -176,7 +176,7 @@ export default function ResourceRequirementsPage() {
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="open">Open</SelectItem>
               <SelectItem value="fulfilled">Fulfilled</SelectItem>
               <SelectItem value="partially_fulfilled">Partially Fulfilled</SelectItem>

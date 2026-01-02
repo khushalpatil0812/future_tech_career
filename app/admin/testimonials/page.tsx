@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trash2, Save, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { logger } from "@/lib/logger"
 
 export default function TestimonialsManagerPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])

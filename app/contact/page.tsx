@@ -31,16 +31,13 @@ export default function ContactPage() {
   async function onSubmit(values: any) {
     setIsSubmitting(true)
     try {
-      console.log("Submitting inquiry:", values)
       const response = await publicApi.submitInquiry(values)
-      console.log("Response:", response)
       toast({ 
         title: "Success!", 
         description: "Thank you! We'll contact you within 24 hours." 
       })
       form.reset()
     } catch (error: any) {
-      console.error("Error submitting inquiry:", error)
       const errorMessage = error?.message || "Something went wrong. Please try again."
       toast({ 
         title: "Error", 

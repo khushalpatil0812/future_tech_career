@@ -58,23 +58,27 @@ export default async function AboutPage() {
           </div>
 
           <div className="bg-primary/5 rounded-2xl p-8 md:p-12 mt-12">
-            <h2 className="text-3xl font-bold mb-6 text-center">Why Choose Us?</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center">Why Choose Future-Tech Career?</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center">
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">1500+</div>
-                <div className="text-muted-foreground font-medium">Successful Placements</div>
+              <div className="p-6 rounded-xl hover:bg-primary/10 transition-colors duration-300">
+                <div className="text-5xl mb-3">👥</div>
+                <div className="text-4xl font-bold text-primary mb-2">50+</div>
+                <div className="text-muted-foreground font-medium">Candidates Successfully Placed</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">98%</div>
-                <div className="text-muted-foreground font-medium">Satisfaction Rate</div>
+              <div className="p-6 rounded-xl hover:bg-accent/10 transition-colors duration-300">
+                <div className="text-5xl mb-3">⭐</div>
+                <div className="text-4xl font-bold text-accent mb-2">95%</div>
+                <div className="text-muted-foreground font-medium">Client Satisfaction Rate</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">10+</div>
-                <div className="text-muted-foreground font-medium">Years Experience</div>
+              <div className="p-6 rounded-xl hover:bg-secondary/10 transition-colors duration-300">
+                <div className="text-5xl mb-3">📅</div>
+                <div className="text-4xl font-bold text-secondary mb-2">3+</div>
+                <div className="text-muted-foreground font-medium">Years of Industry Experience</div>
               </div>
-              <div>
+              <div className="p-6 rounded-xl hover:bg-primary/10 transition-colors duration-300">
+                <div className="text-5xl mb-3">💬</div>
                 <div className="text-4xl font-bold text-primary mb-2">24/7</div>
-                <div className="text-muted-foreground font-medium">Support Availability</div>
+                <div className="text-muted-foreground font-medium">Career Support Availability</div>
               </div>
             </div>
           </div>

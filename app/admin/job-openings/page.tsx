@@ -20,7 +20,7 @@ export default function JobOpeningsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editingJob, setEditingJob] = useState<any | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterDept, setFilterDept] = useState<string>("");
   const { toast } = useToast();
 
@@ -42,7 +42,7 @@ export default function JobOpeningsPage() {
   const fetchJobOpenings = async () => {
     try {
       const params: any = { page: 0, size: 100 };
-      if (filterStatus) params.status = filterStatus;
+      if (filterStatus && filterStatus !== "all") params.status = filterStatus;
       if (filterDept) params.department = filterDept;
       
       const data = await adminApi.getJobOpenings(params);
@@ -176,7 +176,7 @@ export default function JobOpeningsPage() {
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="open">Open</SelectItem>
                   <SelectItem value="closed">Closed</SelectItem>
                   <SelectItem value="on-hold">On Hold</SelectItem>

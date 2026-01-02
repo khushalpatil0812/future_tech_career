@@ -26,8 +26,8 @@ export default function CandidatesPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editingCandidate, setEditingCandidate] = useState<any | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
-  const [filterJobId, setFilterJobId] = useState<string>("");
-  const [filterStage, setFilterStage] = useState<string>("");
+  const [filterJobId, setFilterJobId] = useState<string>("all");
+  const [filterStage, setFilterStage] = useState<string>("all");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -48,7 +48,7 @@ export default function CandidatesPage() {
   const fetchData = async () => {
     try {
       const [candidatesData, jobsData] = await Promise.all([
-        adminApi.getCandidates({ page: 0, size: 100, jobOpeningId: filterJobId || undefined, interviewStage: filterStage || undefined }),
+        adminApi.getCandidates({ page: 0, size: 100, jobOpeningId: (filterJobId && filterJobId !== "all") ? filterJobId : undefined, interviewStage: (filterStage && filterStage !== "all") ? filterStage : undefined }),
         adminApi.getJobOpenings({ page: 0, size: 100, status: "open" })
       ]);
       setCandidates(candidatesData.content || candidatesData.items || []);
@@ -177,7 +177,7 @@ export default function CandidatesPage() {
                   <SelectValue placeholder="All Jobs" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Jobs</SelectItem>
+                  <SelectItem value="all">All Jobs</SelectItem>
                   {jobOpenings.map((job) => (
                     <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
                   ))}
@@ -191,7 +191,7 @@ export default function CandidatesPage() {
                   <SelectValue placeholder="All Stages" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Stages</SelectItem>
+                  <SelectItem value="all">All Stages</SelectItem>
                   {INTERVIEW_STAGES.map((stage) => (
                     <SelectItem key={stage} value={stage}>{stage}</SelectItem>
                   ))}

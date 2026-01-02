@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/testimonials/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/partners/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/feedback").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()

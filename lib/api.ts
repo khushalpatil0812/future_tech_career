@@ -1,24 +1,28 @@
-import { mockData, type Testimonial, type Inquiry } from "./mock-data"
+import { type Testimonial, type Inquiry } from "./mock-data"
 import { logger } from "./logger"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
 export const publicApi = {
   async getTestimonials(): Promise<Testimonial[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/testimonials/active`, {
+      const response = await fetch(`${API_BASE_URL}/public/feedback`, {
         next: { revalidate: 300 }, // Cache for 5 minutes
         signal: AbortSignal.timeout(5000), // 5 second timeout
       })
       if (!response.ok) throw new Error("Failed to fetch testimonials")
       const data = await response.json()
       // Backend returns ApiResponse wrapper with data property
-      return data.data || data
+      const testimonials = data.data || data
+      // Map 'content' field to 'feedback' field for frontend compatibility
+      return testimonials.map((t: any) => ({
+        ...t,
+        feedback: t.content || t.feedback || "",
+        status: "approved"
+      }))
     } catch (error) {
       logger.error("Error fetching testimonials:", error)
-      return mockData.testimonials.filter((t) => t.status === "approved")
+      return []
     }
   },
 
@@ -81,7 +85,7 @@ export const publicApi = {
     }
   },
 
-  async getSEO(page: keyof typeof mockData.seo) {
+  async getSEO(page: string) {
     try {
       const response = await fetch(`${API_BASE_URL}/seo/${page}`, {
         next: { revalidate: 600 }, // Cache for 10 minutes
@@ -93,7 +97,13 @@ export const publicApi = {
       return data.data || data
     } catch (error) {
       logger.error("Error fetching SEO data:", error)
-      return mockData.seo[page]
+      // Return minimal SEO data instead of mock data
+      return {
+        title: "Future-Tech Career",
+        description: "Professional Career Consultancy Services",
+        keywords: "career, consultancy, jobs",
+        ogImage: ""
+      }
     }
   },
 
@@ -113,7 +123,12 @@ export const publicApi = {
       }, {})
     } catch (error) {
       logger.error("Error fetching content:", error)
-      return mockData.content
+      // Return empty content object instead of mock data
+      return {
+        hero: { title: "FUTURE-TECH CAREER", content: "HELPING YOU BUILD YOUR CAREER" },
+        about: { title: "About", content: "" },
+        contact: { title: "Contact", content: "" }
+      }
     }
   },
 }
@@ -153,8 +168,8 @@ export const adminApi = {
       const result = await response.json()
       // Backend returns ApiResponse wrapper with PaginationResponse inside
       const data = result.data || result
-      // PaginationResponse has items array
-      return data.items || data
+      // PaginationResponse has content array
+      return data.content || data.items || data
     } catch (error) {
       logger.error("Error fetching inquiries:", error)
       return []
@@ -171,8 +186,8 @@ export const adminApi = {
       const result = await response.json()
       // Backend returns ApiResponse wrapper with PaginationResponse inside
       const data = result.data || result
-      // PaginationResponse has items array
-      return data.items || data
+      // PaginationResponse has content array
+      return data.content || data.items || data
     } catch (error) {
       logger.error("Error fetching feedback:", error)
       return []
@@ -182,13 +197,17 @@ export const adminApi = {
   async updateTestimonialStatus(id: string, status: "approved" | "rejected") {
     try {
       const token = localStorage.getItem("admin_token")
-      const response = await fetch(`${API_BASE_URL}/admin/testimonials/${id}/status`, {
-        method: "PUT",
+      const endpoint = status === "approved" 
+        ? `${API_BASE_URL}/admin/feedback/${id}/approve`
+        : `${API_BASE_URL}/admin/feedback/${id}/reject`
+      
+      const response = await fetch(endpoint, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status }),
+        body: status === "approved" ? JSON.stringify({}) : undefined,
       })
       if (!response.ok) throw new Error("Failed to update status")
       return await response.json()
@@ -198,7 +217,7 @@ export const adminApi = {
     }
   },
 
-  async updateContent(content: typeof mockData.content) {
+  async updateContent(content: any) {
     try {
       const token = localStorage.getItem("admin_token")
       const response = await fetch(`${API_BASE_URL}/admin/content`, {
@@ -217,7 +236,7 @@ export const adminApi = {
     }
   },
 
-  async updateSEO(seo: typeof mockData.seo) {
+  async updateSEO(seo: any) {
     try {
       const token = localStorage.getItem("admin_token")
       const response = await fetch(`${API_BASE_URL}/admin/seo`, {

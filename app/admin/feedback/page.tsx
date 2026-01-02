@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, X, Trash2, Star } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { logger } from "@/lib/logger"
 
 export default function FeedbackManagerPage() {
   const [feedback, setFeedback] = useState<Testimonial[]>([])
@@ -17,7 +18,16 @@ export default function FeedbackManagerPage() {
   useEffect(() => {
     adminApi.getFeedback()
       .then((data) => {
-        setFeedback(Array.isArray(data) ? data : [])
+        logger.log("Raw feedback data:", data)
+        // Normalize dates if they come as arrays from Java LocalDateTime
+        const normalized = Array.isArray(data) ? data.map((f: any) => ({
+          ...f,
+          createdAt: Array.isArray(f.createdAt)
+            ? new Date(f.createdAt[0], f.createdAt[1] - 1, f.createdAt[2], f.createdAt[3] || 0, f.createdAt[4] || 0, f.createdAt[5] || 0).toISOString()
+            : f.createdAt
+        })) : []
+        logger.log("Normalized feedback:", normalized)
+        setFeedback(normalized)
         setIsLoading(false)
       })
       .catch((error) => {
@@ -43,6 +53,21 @@ export default function FeedbackManagerPage() {
   }
 
   if (isLoading) return <div className="p-8">Loading feedback...</div>
+
+  if (feedback.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Feedback Manager</h1>
+          <Badge variant="outline">0 Pending</Badge>
+        </div>
+        <div className="border rounded-lg bg-background p-8 text-center text-muted-foreground">
+          <p>No feedback submissions yet.</p>
+          <p className="text-sm mt-2">Feedback from the public website will appear here.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

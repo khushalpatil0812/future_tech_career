@@ -3,7 +3,9 @@ package com.futuretech.career.service;
 import com.futuretech.career.dto.TestimonialRequest;
 import com.futuretech.career.exception.ResourceNotFoundException;
 import com.futuretech.career.model.Testimonial;
+import com.futuretech.career.model.Feedback;
 import com.futuretech.career.repository.TestimonialRepository;
+import com.futuretech.career.repository.FeedbackRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,27 @@ import java.util.List;
 public class TestimonialService {
     
     private final TestimonialRepository testimonialRepository;
+    private final FeedbackRepository feedbackRepository;
+    
+    public List<Testimonial> getApprovedTestimonials() {
+        // Get approved feedback and convert to Testimonial format
+        List<Feedback> approvedFeedback = feedbackRepository.findByStatusOrderByCreatedAtDesc("approved");
+        return approvedFeedback.stream()
+                .map(this::convertFeedbackToTestimonial)
+                .collect(Collectors.toList());
+    }
+    
+    private Testimonial convertFeedbackToTestimonial(Feedback feedback) {
+        Testimonial testimonial = new Testimonial();
+        testimonial.setId(feedback.getId());
+        testimonial.setName(feedback.getName());
+        testimonial.setContent(feedback.getFeedback());
+        testimonial.setRating(feedback.getRating());
+        testimonial.setIsActive(true);
+        testimonial.setCreatedAt(feedback.getCreatedAt());
+        // You can set position/company from feedback if needed
+        return testimonial;
+    }
     
     public List<Testimonial> getActiveTestimonials() {
         return testimonialRepository.findByIsActiveTrueOrderByCreatedAtDesc();

@@ -224,6 +224,7 @@ export default function PartnersPage() {
                 <Label htmlFor="name">Partner Name *</Label>
                 <Input
                   id="name"
+                  name="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -235,6 +236,7 @@ export default function PartnersPage() {
                 <Label htmlFor="logoUrl">Logo URL *</Label>
                 <Input
                   id="logoUrl"
+                  name="logoUrl"
                   value={formData.logoUrl}
                   onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
                   required
@@ -248,6 +250,7 @@ export default function PartnersPage() {
                 <Label htmlFor="websiteUrl">Website URL</Label>
                 <Input
                   id="websiteUrl"
+                  name="websiteUrl"
                   value={formData.websiteUrl}
                   onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
                   placeholder="https://example.com"
@@ -257,6 +260,7 @@ export default function PartnersPage() {
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
+                  name="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
@@ -267,10 +271,11 @@ export default function PartnersPage() {
                 <Label htmlFor="displayOrder">Display Order</Label>
                 <Input
                   id="displayOrder"
+                  name="displayOrder"
                   type="number"
                   min={0}
                   value={formData.displayOrder}
-                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Lower numbers appear first in the carousel

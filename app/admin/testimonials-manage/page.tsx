@@ -226,6 +226,7 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="name">Name *</Label>
                 <Input
                   id="name"
+                  name="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -236,6 +237,7 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="position">Position *</Label>
                 <Input
                   id="position"
+                  name="position"
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
                   required
@@ -246,6 +248,7 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="company">Company</Label>
                 <Input
                   id="company"
+                  name="company"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                 />
@@ -254,6 +257,7 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="content">Content *</Label>
                 <Textarea
                   id="content"
+                  name="content"
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   required
@@ -265,11 +269,12 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="rating">Rating (1-5) *</Label>
                 <Input
                   id="rating"
+                  name="rating"
                   type="number"
                   min={1}
                   max={5}
                   value={formData.rating}
-                  onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) || 5 })}
                   required
                 />
               </div>
@@ -277,6 +282,7 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="avatarUrl">Avatar URL</Label>
                 <Input
                   id="avatarUrl"
+                  name="avatarUrl"
                   value={formData.avatarUrl}
                   onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
                   placeholder="https://example.com/avatar.jpg"
@@ -286,10 +292,11 @@ export default function TestimonialsManagementPage() {
                 <Label htmlFor="displayOrder">Display Order</Label>
                 <Input
                   id="displayOrder"
+                  name="displayOrder"
                   type="number"
                   min={0}
                   value={formData.displayOrder}
-                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
                 />
               </div>
               <div className="flex items-center space-x-2">
