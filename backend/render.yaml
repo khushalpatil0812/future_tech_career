@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: future-tech-career-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/career-backend-1.0.0.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 5000
