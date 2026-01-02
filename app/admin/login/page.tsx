@@ -93,10 +93,6 @@ export default function AdminLoginPage() {
               </Button>
             </form>
           </Form>
-          <div className="mt-6 text-center text-xs text-muted-foreground">
-            <p>Demo Credentials:</p>
-            <p>Email: admin@futuretech.com | Pass: admin123</p>
-          </div>
         </CardContent>
       </Card>
     </div>
