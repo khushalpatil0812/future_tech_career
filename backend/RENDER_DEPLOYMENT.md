@@ -4,24 +4,23 @@
 - GitHub repository with your backend code
 - Render account (sign up at https://render.com)
 
-## Step 1: Create MySQL Database on External Service
+## Step 1: Create PostgreSQL Database on Render
 
-Since Render doesn't offer MySQL on free tier, use one of these:
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **"New +"** → **"PostgreSQL"**
+3. Configure:
+   - **Name**: `futuretech-db`
+   - **Database**: `futuretech_db`
+   - **User**: `futuretech_user`
+   - **Region**: Choose closest to your users (Oregon, Frankfurt, Singapore, etc.)
+   - **PostgreSQL Version**: 16 (latest)
+   - **Plan**: **Free** (or Starter $7/month for better performance)
 
-### Option A: Railway.app (Recommended - Has Free Tier)
-1. Go to [Railway.app](https://railway.app)
-2. Create new project → Add MySQL
-3. Copy connection details
+4. Click **"Create Database"**
 
-### Option B: Aiven (Free tier available)
-1. Go to [Aiven.io](https://aiven.io)
-2. Create MySQL service
-3. Copy connection details
-
-### Option C: PlanetScale (Free tier available)
-1. Go to [PlanetScale.com](https://planetscale.com)
-2. Create database
-3. Copy connection string
+5. After creation, copy the **Internal Database URL** from the database dashboard
+   - It looks like: `postgresql://futuretech_user:password@dpg-xxxxx/futuretech_db`
+   - Keep this for Step 3
 
 ## Step 2: Configure Production Settings
 
@@ -73,30 +72,46 @@ git push origin main
 6. **Environment Variables** - Click "Advanced" and add:
    ```
    SPRING_PROFILES_ACTIVE=prod
-   DATABASE_URL=jdbc:mysql://[host]:[port]/futuretech_db?useSSL=true
+   DATABASE_URL=[Paste Internal Database URL from Step 1]
+   JWT_SECRET=your-very-secure-random-string-min-32-chars
+   CORS_ORIGINS=https://your-app.vercel.app,http://localhost:3000
+   ```
+   
+   **Important**: Use the **Internal Database URL** from Step 1, not the External URL.
+   It should start with `postgresql://` (Render uses PostgreSQL, not MySQL)
    DB_USERNAME=[your-db-username]
    DB_PASSWORD=[your-db-password]
 ## Step 4: Initialize Database
 
 After backend deployment, initialize your database:
 
-1. **Connect to your MySQL database** using MySQL Workbench or command line:
+1. **Connect to PostgreSQL database** using the connection info from Render:
+   - In Render Dashboard → Your Database → "Connect"
+   - Use the External Database URL for connecting from your machine
+
+2. **Using psql command line**:
 ```bash
-mysql -h [your-db-host] -P [port] -u [username] -p [database-name]
+# Copy External Database URL from Render
+psql postgresql://futuretech_user:password@dpg-xxxxx-external.postgres.render.com/futuretech_db
+
+# Then paste and run the SQL commands from insert_sample_data.sql
 ```
 
-2. **Run the SQL script**:
+3. **Using Render Shell** (Easier):
+   - Go to your **Web Service** (not database) in Render Dashboard
+   - Click **"Shell"** tab
+   - Run this command:
 ```bash
-# Copy content from backend/insert_sample_data.sql and paste in MySQL client
-# Or run directly:
-mysql -h [host] -u [user] -p [database] < insert_sample_data.sql
+psql $DATABASE_URL -f /app/insert_sample_data.sql
 ```
 
-3. **Verify data**:
+4. **Verify data**:
 ```sql
 SELECT COUNT(*) FROM feedback WHERE status = 'approved';
 -- Should return 6
-```r backend will be available at: `https://future-tech-career-backend.onrender.com`
+```
+
+**Note**: The SQL file uses MySQL syntax. PostgreSQL should auto-convert most of it, but if you see errors, the tables will still be created by Hibernate automatically.r backend will be available at: `https://future-tech-career-backend.onrender.com`
 
 Test endpoints:
 ```bash

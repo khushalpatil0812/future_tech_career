@@ -9,23 +9,16 @@
 
 ## 📋 Step-by-Step Deployment
 
-### 1️⃣ Setup Database (5 minutes)
+### 1️⃣ Setup Database on Render (3 minutes)
 
-Choose one free option:
-
-**Option A: Railway.app** (Recommended)
 ```
-1. Go to https://railway.app
-2. Sign up with GitHub
-3. New Project → Add MySQL
-4. Copy connection details
-```
-
-**Option B: PlanetScale**
-```
-1. Go to https://planetscale.com
-2. Create database
-3. Copy connection string
+1. Go to https://dashboard.render.com
+2. New+ → PostgreSQL
+3. Name: futuretech-db
+4. Region: Choose closest to you
+5. Plan: Free
+6. Create Database
+7. Copy "Internal Database URL" (starts with postgresql://)
 ```
 
 ### 2️⃣ Deploy Backend on Render (10 minutes)
@@ -52,27 +45,32 @@ git push origin main
 **Environment Variables:**
 ```env
 SPRING_PROFILES_ACTIVE=prod
-DATABASE_URL=jdbc:mysql://[HOST]:[PORT]/futuretech_db
-DB_USERNAME=[your-username]
-DB_PASSWORD=[your-password]
+DATABASE_URL=[Paste Internal Database URL from Step 1]
 JWT_SECRET=change-this-to-a-very-long-random-string-min-32-characters
 CORS_ORIGINS=http://localhost:3000
-PORT=5000
 ```
+
+**Important**: Use Internal Database URL (starts with `postgresql://`)
 
 Click "Create Web Service" → Wait 5-10 minutes
 
 **Your backend URL:** `https://future-tech-career-backend.onrender.com`
 
 ### 3️⃣ Initialize Database (2 minutes)
+### 3️⃣ Initialize Database (2 minutes)
 
+**Option 1: Using Render Shell** (Easiest)
 ```bash
-# Connect to your database and run:
-mysql -h [HOST] -u [USER] -p [DATABASE] < backend/insert_sample_data.sql
-
-# Or use MySQL Workbench and paste the content of insert_sample_data.sql
+# In Render Dashboard → Your Web Service → Shell tab
+psql $DATABASE_URL -f /app/insert_sample_data.sql
 ```
 
+**Option 2: Using psql locally**
+```bash
+# Copy External Database URL from Render
+psql [EXTERNAL_DATABASE_URL]
+# Then paste SQL from insert_sample_data.sql
+```
 ### 4️⃣ Deploy Frontend on Vercel (5 minutes)
 
 ```bash
@@ -124,10 +122,10 @@ Test these URLs in browser:
 
 3. **Admin:**
    - `https://your-app.vercel.app/admin/login`
-   - Login with credentials from database
-
----
-
+### Free Tier Limitations:
+- **Render Web Service**: Spins down after 15 min inactivity (30s wake up time)
+- **Render PostgreSQL**: Free for 90 days, then $7/month
+- **Vercel**: 100GB bandwidth/month
 ## 🔥 Important Notes
 
 ### Free Tier Limitations:
